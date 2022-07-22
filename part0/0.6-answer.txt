@@ -1,0 +1,23 @@
+note over browser:
+User enters some text in the form with name 'note'
+end note
+
+note over browser:
+User clicks the submit button
+end note
+
+note over browser:
+Browser creates json data list with fields: 'content' and 'date'
+end note
+
+note over browser:
+Browser executes code
+that redrawing notes with new notes on display
+end note
+
+browser->server: HTTP POST json list to https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+note over server:
+Saves data from json list to exampleapp/data.json
+end note
+
+server-->browser: Responce Status code: 201, Responce: "message" : "note created"
