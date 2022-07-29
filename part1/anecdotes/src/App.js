@@ -1,9 +1,9 @@
 import { useState } from 'react'
 
+// components of the App
 const Anecdot = ({ anecdot, votes }) => {
   return (
     <div>
-      <h1>Anecdote of the day</h1>
       <div>
         {anecdot}
       </div>
@@ -33,9 +33,11 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.'
   ]
 
+  // initialize states
   const [selected, setSelected] = useState(0)
   const [votes, setVote] = useState(Array(anecdotes.length).fill(0))
 
+  // event handlers for buttons
   const changeAnecdote = () => {
     let indOfAnecdot = null
 
@@ -54,11 +56,17 @@ const App = () => {
     setVote(copyOfVotes)
   }
 
+  // index of the anecdote with the most votes on it
+  const popAncInd = votes.indexOf(Math.max(...votes))
+
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <Anecdot anecdot={anecdotes[selected]} votes={votes[selected]} />
       <Button text='vote' onClick={voteAnecdote} />
       <Button text='next anecdote' onClick={changeAnecdote} />
+      <h1>Anecdote with the most votes</h1>
+      <Anecdot anecdot={anecdotes[popAncInd]} votes={votes[popAncInd]} />
     </div>
   )
 }
