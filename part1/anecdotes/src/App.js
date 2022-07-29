@@ -1,9 +1,15 @@
 import { useState } from 'react'
 
-const Anecdot = ({ anecdot }) => {
+const Anecdot = ({ anecdot, votes }) => {
   return (
     <div>
-      {anecdot}
+      <h1>Anecdote of the day</h1>
+      <div>
+        {anecdot}
+      </div>
+      <div>
+        has {votes} votes
+      </div>
     </div>
   )
 }
@@ -28,6 +34,7 @@ const App = () => {
   ]
 
   const [selected, setSelected] = useState(0)
+  const [votes, setVote] = useState(Array(anecdotes.length).fill(0))
 
   const changeAnecdote = () => {
     let indOfAnecdot = null
@@ -40,10 +47,17 @@ const App = () => {
     setSelected(indOfAnecdot)
   }
 
+  const voteAnecdote = () => {
+    const copyOfVotes = [...votes]
+    copyOfVotes[selected] += 1
+
+    setVote(copyOfVotes)
+  }
 
   return (
     <div>
-      <Anecdot anecdot={anecdotes[selected]} />
+      <Anecdot anecdot={anecdotes[selected]} votes={votes[selected]} />
+      <Button text='vote' onClick={voteAnecdote} />
       <Button text='next anecdote' onClick={changeAnecdote} />
     </div>
   )
