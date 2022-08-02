@@ -1,24 +1,36 @@
 import { useState } from 'react'
 
 const App = () => {
+  
+  // initialize states
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas' }
   ])
   const [newName, setNewName] = useState('')
 
+  //add person event handler
   const addPerson = (event) => {
     event.preventDefault()
-    const newPerson = {
-      name: newName
-    }
 
-    setPersons(persons.concat(newPerson))
-    setNewName('')
+    const notAlreadyExists = () =>
+      persons.every((person) => person.name !== newName)
+
+    if (notAlreadyExists()) {
+      setPersons(persons.concat({
+        name: newName
+      }))
+      setNewName('')
+    }
+    else {
+      alert(`${newName} is already added to phonebook`)
+    }
   }
 
+  // change  
   const handleNameChange = (event) => {
     setNewName(event.target.value)
   }
+
   return (
     <div>
       <h2>Phonebook</h2>
