@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 // components
 const Filter = ({ value, onChange }) => {
@@ -37,18 +38,27 @@ const Persons = ({ values }) => {
 
 // main component
 const App = () => {
-  // initialize states
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
+  // -- initialize states --
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterValue, setFilterValue] = useState('')
 
-  //add person event handler
+  // -- Hooks and useEffects
+  // hooks
+  const hook = () => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(responce => {
+        const data = responce.data
+        setPersons(data)
+      })
+  }
+  // effects
+  useEffect(hook, [])
+
+  // -- Handlers --
+  // add person event handler
   const addPerson = (event) => {
     event.preventDefault()
 
@@ -66,7 +76,6 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
     }
   }
-
   // change handlers
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -80,7 +89,7 @@ const App = () => {
     setFilterValue(event.target.value)
   }
 
-  // other constantes
+  // -- other constantes --
   const filteredPersons = filterValue.trim() ? persons.filter((person) =>
     person.name.toLowerCase().includes(filterValue.toLowerCase())
   ) : persons
@@ -93,7 +102,7 @@ const App = () => {
       <PersonForm onSubmit={addPerson} nameValue={newName} nameOnChange={handleNameChange}
         numberValue={newNumber} numberOnChange={handleNumberChange} />
       <h2>Numbers</h2>
-      <Persons values={filteredPersons}/>
+      <Persons values={filteredPersons} />
     </div>
   )
 }
