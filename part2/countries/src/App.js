@@ -68,6 +68,45 @@ const Country = ({ country }) => {
       <div style={{ 'fontSize': '1500%' }}>
         {country.flag}
       </div>
+      <div>
+        <h3>Weather in {country.capital}</h3>
+        <Weather lat={country.capitalInfo.latlng[0]} lon={country.capitalInfo.latlng[1]} />
+      </div>
+    </div>
+  )
+}
+
+const Weather = ({ lat, lon }) => {
+  // useStates
+  const [weatherData, setWeatherData] = useState({
+    temp: 0,
+    icon: '01d',
+    speed: 0
+  })
+
+  // useEffects and their hooks
+  const hook = () => {
+    axios
+      .get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.REACT_APP_API_KEY}`)
+      .then(responce => {
+        const weather = {
+          temp: (responce.data.main.temp - 273.15).toFixed(1),
+          icon: responce.data.weather[0].icon,
+          speed: responce.data.wind.speed
+        }
+        setWeatherData(weather)
+      })
+
+
+
+  }
+  useEffect(hook, [lat, lon])
+
+  return (
+    <div>
+      <div>temperature {weatherData.temp} Celcius</div>
+      <div><img src={`http://openweathermap.org/img/wn/${weatherData.icon}@2x.png`} alt='weather icon' /></div>
+      <div>Wind {weatherData.speed} m/s</div>
     </div>
   )
 }
@@ -103,7 +142,7 @@ const App = () => {
   return (
     <div>
       <Search text={searchText} onChange={handleSearchChange} />
-      <Results countries={filteredCountries} setSearchText={setSearchText}/>
+      <Results countries={filteredCountries} setSearchText={setSearchText} />
     </div>
   )
 }
