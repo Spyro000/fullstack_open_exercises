@@ -60,7 +60,6 @@ const App = () => {
   // add person event handler
   const addPerson = (event) => {
     event.preventDefault()
-
     const notAlreadyExists = () =>
       persons.every((person) => person.name !== newName)
 
@@ -74,8 +73,24 @@ const App = () => {
           setNewNumber('')
         })
     }
+
     else {
-      alert(`${newName} is already added to phonebook`)
+      const person = persons.find(p => p.name === newName)
+      const newPerson = { ...person, number: newNumber }
+      if (window.confirm(`${newName} is already added to phonebook, `
+        + `replace the old number with a new one?`)) {
+        phoneServices
+          .modify(newPerson.id, newPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== newPerson.id ? person : returnedPerson))
+            setNewName('')
+            setNewNumber('')
+          })
+          .catch(error => {
+            alert(`Person ${newName} already deleted`)
+            setPersons(persons.filter(person => person.id !== newPerson.id))
+          })
+      }
     }
   }
 
