@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import phoneServices from './services/phones'
 
 // components
 const Filter = ({ value, onChange }) => {
@@ -45,17 +45,12 @@ const App = () => {
   const [filterValue, setFilterValue] = useState('')
 
   // -- Hooks and useEffects
-  // hooks
-  const hook = () => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(responce => {
-        const data = responce.data
-        setPersons(data)
-      })
-  }
   // effects
-  useEffect(hook, [])
+  useEffect(() => {
+    phoneServices
+      .getAll()
+      .then(phones => setPersons(phones))
+  }, [])
 
   // -- Handlers --
   // add person event handler
@@ -67,10 +62,10 @@ const App = () => {
 
     if (notAlreadyExists()) {
       const newPerson = { name: newName, number: newNumber }
-      axios
-        .post('http://localhost:3001/persons', newPerson)
-        .then(responce => {
-          setPersons(persons.concat(responce.data))
+      phoneServices
+        .addNew(newPerson)
+        .then(addedPerson => {
+          setPersons(persons.concat(addedPerson))
           setNewName('')
           setNewNumber('')
         })
