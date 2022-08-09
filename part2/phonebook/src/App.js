@@ -26,11 +26,15 @@ const PersonForm = ({ onSubmit, nameValue, nameOnChange, numberValue, numberOnCh
   )
 }
 
-const Persons = ({ values }) => {
+const Persons = ({ values, deleteHandler }) => {
   return (
     <div>
       {values.map((person) =>
-        <div key={person.name}>{person.name} {person.number}</div>
+        <div key={person.id}>
+          {person.name} {person.number} <button onClick={() => deleteHandler(person.id)} >
+            delete
+          </button>
+        </div>
       )}
     </div>
   )
@@ -74,6 +78,23 @@ const App = () => {
       alert(`${newName} is already added to phonebook`)
     }
   }
+
+  // delete person event handler
+  const deletePerson = id => {
+    const personName = persons.find(person => person.id === id).name
+    if (window.confirm(`Delete ${personName}`)) {
+      phoneServices
+        .deleteOne(id)
+        .then(deletedPerson => {
+          setPersons(persons.filter(person => person.id !== id))
+        })
+        .catch(error => {
+          alert(`Person ${personName} already deleted`)
+          setPersons(persons.filter(person => person.id !== id))
+        })
+    }
+  }
+
   // change handlers
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -100,7 +121,7 @@ const App = () => {
       <PersonForm onSubmit={addPerson} nameValue={newName} nameOnChange={handleNameChange}
         numberValue={newNumber} numberOnChange={handleNumberChange} />
       <h2>Numbers</h2>
-      <Persons values={filteredPersons} />
+      <Persons values={filteredPersons} deleteHandler={deletePerson} />
     </div>
   )
 }
