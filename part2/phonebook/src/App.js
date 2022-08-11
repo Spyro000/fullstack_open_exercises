@@ -40,6 +40,29 @@ const Persons = ({ values, deleteHandler }) => {
   )
 }
 
+const Message = ({text, isError}) => {
+  const messageStyle = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+  const errorStyle = {...messageStyle, color: 'red'}
+  
+  if (text === null) {
+    return null
+  }
+
+  return (
+    <div style={isError ? errorStyle : messageStyle}>
+      {text}
+    </div>
+  )
+}
+
 // main component
 const App = () => {
   // -- initialize states --
@@ -47,6 +70,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterValue, setFilterValue] = useState('')
+  const [message, setMessage] = useState({text: null, isError: false})
 
   // -- Hooks and useEffects
   // effects
@@ -68,6 +92,10 @@ const App = () => {
       phoneServices
         .addNew(newPerson)
         .then(addedPerson => {
+          setMessage({text: `Added ${newName}`, isError: false})
+          setTimeout(() => {
+            setMessage({text: null})
+          }, 3000)
           setPersons(persons.concat(addedPerson))
           setNewName('')
           setNewNumber('')
@@ -87,7 +115,10 @@ const App = () => {
             setNewNumber('')
           })
           .catch(error => {
-            alert(`Person ${newName} already deleted`)
+            setMessage({text: `Person ${newName} already deleted`, isError: true})
+            setTimeout(() => {
+              setMessage({text: null})
+            }, 3000)
             setPersons(persons.filter(person => person.id !== newPerson.id))
           })
       }
@@ -104,7 +135,10 @@ const App = () => {
           setPersons(persons.filter(person => person.id !== id))
         })
         .catch(error => {
-          alert(`Person ${personName} already deleted`)
+          setMessage({text: `Person ${personName} already deleted`, isError: true})
+          setTimeout(() => {
+            setMessage({text: null})
+          }, 3000)
           setPersons(persons.filter(person => person.id !== id))
         })
     }
@@ -131,6 +165,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Message text={message.text} isError={message.isError} />
       <Filter value={filterValue} onChange={handleFilterChange} />
       <h2>add a new</h2>
       <PersonForm onSubmit={addPerson} nameValue={newName} nameOnChange={handleNameChange}
