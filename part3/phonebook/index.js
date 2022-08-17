@@ -29,7 +29,6 @@ app.get('/api/persons', (request, response) => {
         .then((persons) => {
             response.send(persons)
         })
-
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -50,20 +49,21 @@ app.post('/api/persons', (request, response) => {
         response.status(400).json({ error: 'Missed name or number' })
         return
     }
-    if (persons.find(person => person.name === body.name)) {
+    //TODO fix this block of code so that it will work with MongoDB
+    /*if (persons.find(person => person.name === body.name)) {
         response.status(400).json({ error: `Name ${body.name} already exists in phonebook` })
         return
-    }
+    }*/
 
-    const person = {
+    const person = new Person({
         name: body.name,
         number: body.number,
-        id: randomId()
-    }
+    })
 
-    persons = persons.concat(person)
-
-    response.json(person)
+    person.save()
+        .then(savedPerson => {
+            response.json(person)
+        })
 })
 
 app.put('/api/persons/:id', (request, response) => {
