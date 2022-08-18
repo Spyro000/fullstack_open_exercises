@@ -39,13 +39,8 @@ app.get('/api/persons/:id', (request, response, next) => {
         .catch(err => next(err))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
-
-    if (!body.name || !body.number) {
-        response.status(400).json({ error: 'Missed name or number' })
-        return
-    }
 
     const person = new Person({
         name: body.name,
@@ -56,6 +51,7 @@ app.post('/api/persons', (request, response) => {
         .then(savedPerson => {
             response.json(person)
         })
+        .catch(err => next(err))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -80,10 +76,10 @@ app.delete('/api/persons/:id', (request, response, next) => {
 
 app.get('/info', (request, response) => {
     Person.find({})
-    .then((persons) => {
-        response.send(`<div>Phonebook has info for ${persons.length} people</div>`
-        + `<div>${new Date()}</div>`)
-    })
+        .then((persons) => {
+            response.send(`<div>Phonebook has info for ${persons.length} people</div>`
+                + `<div>${new Date()}</div>`)
+        })
 })
 
 //wrong request handler
@@ -96,7 +92,10 @@ app.use(wrongRequest)
 const errorHandler = (error, request, responce, next) => {
     console.log(error)
     if (error.name === 'CastError') {
-        responce.status(400).json({error: 'Wrong id formatting'})
+        return responce.status(400).json({ error: 'Wrong id formatting' })
+    }
+    else if (error.name === 'ValidationError') {
+        return responce.status(400).json({ error: error.message })
     }
     next(error)
 }

@@ -100,6 +100,15 @@ const App = () => {
           setNewName('')
           setNewNumber('')
         })
+        .catch(error => {
+          console.log(error.response.data.error)
+          setMessage({text: error.response.data.error, isError: true})
+          setTimeout(() => {
+            setMessage({text: null})
+          }, 3000)
+          setNewName('')
+          setNewNumber('')
+        })
     }
 
     else {
