@@ -47,11 +47,20 @@ app.post('/api/persons', (request, response, next) => {
         number: body.number,
     })
 
-    person.save()
-        .then(savedPerson => {
-            response.json(person)
+    Person.find({ name: body.name })
+        .then(result => {
+            console.log(result)
+            if (result.length === 0) {
+                person.save()
+                    .then(savedPerson => {
+                        response.json(person)
+                    })
+                    .catch(err => next(err))
+            }
+            else {
+                response.status(400).json({ error: `${body.name} already exists` })
+            }
         })
-        .catch(err => next(err))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -59,7 +68,7 @@ app.put('/api/persons/:id', (request, response, next) => {
         number: request.body.number
     }
 
-    Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    Person.findByIdAndUpdate(request.params.id, person, { new: true, runValidators: true, context: 'query' })
         .then(updatedPerson => {
             response.json(updatedPerson)
         })

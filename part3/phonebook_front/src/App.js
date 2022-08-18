@@ -124,11 +124,10 @@ const App = () => {
             setNewNumber('')
           })
           .catch(error => {
-            setMessage({text: `Person ${newName} already deleted`, isError: true})
+            setMessage({text: error.response.data.error, isError: true})
             setTimeout(() => {
               setMessage({text: null})
             }, 3000)
-            setPersons(persons.filter(person => person.id !== newPerson.id))
           })
       }
     }
