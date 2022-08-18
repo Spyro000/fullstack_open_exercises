@@ -89,8 +89,24 @@ app.get('/info', (request, response) => {
         + `<div>${new Date()}</div>`)
 })
 
-const PORT = process.env.PORT || 3001
+//wrong request handler
+const wrongRequest = (request, responce) => {
+    responce.status(404).json({error: 'wrong request'})
+}
+app.use(wrongRequest)
 
+//error handling middleware
+const errorHandler = (error, request, responce, next) => {
+    console.log(error)
+    if (error.name === 'CastError') {
+        responce.status(400).send('Wrong id formatting')
+    }
+    next(error)
+}
+app.use(errorHandler)
+
+//start server
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`)
 })
