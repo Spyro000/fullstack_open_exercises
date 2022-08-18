@@ -62,18 +62,16 @@ app.post('/api/persons', (request, response) => {
         })
 })
 
-app.put('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-    if (person) {
-        person.number = request.body.number
-        response.json(person)
+app.put('/api/persons/:id', (request, response, next) => {
+    const person = {
+        number: request.body.number
     }
-    else {
-        response.status(400).json({ error: `Name ${request.body.name} already deleted from phonebook` })
-        return
-    }
-
+    
+    Person.findByIdAndUpdate(request.params.id, person, {new: true})
+    .then(updatedPerson => {
+        response.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
