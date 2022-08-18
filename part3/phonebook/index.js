@@ -20,10 +20,6 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :j
 app.use(cors())
 app.use(express.static('build'))
 
-const randomId = () => {
-    return Math.round(Math.random() * 10000000)
-}
-
 app.get('/api/persons', (request, response) => {
     Person.find({})
         .then((persons) => {
@@ -80,10 +76,12 @@ app.put('/api/persons/:id', (request, response) => {
 
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-    response.status(204).end()
+app.delete('/api/persons/:id', (request, response, next) => {
+    Person.findByIdAndDelete(request.params.id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch(err => next(err))
 })
 
 app.get('/info', (request, response) => {
