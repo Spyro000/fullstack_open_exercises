@@ -27,15 +27,16 @@ app.get('/api/persons', (request, response) => {
         })
 })
 
-app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    const person = persons.find(person => person.id === id)
-
-    if (person) {
-        response.send(person)
-    } else {
-        response.status(404).end()
-    }
+app.get('/api/persons/:id', (request, response, next) => {
+    Person.findById(request.params.id)
+        .then(person => {
+            if (person) {
+                response.send(person)
+            } else {
+                response.status(404).end()
+            }
+        })
+        .catch(err => next(err))
 })
 
 app.post('/api/persons', (request, response) => {
@@ -45,11 +46,6 @@ app.post('/api/persons', (request, response) => {
         response.status(400).json({ error: 'Missed name or number' })
         return
     }
-    //TODO fix this block of code so that it will work with MongoDB
-    /*if (persons.find(person => person.name === body.name)) {
-        response.status(400).json({ error: `Name ${body.name} already exists in phonebook` })
-        return
-    }*/
 
     const person = new Person({
         name: body.name,
@@ -66,12 +62,12 @@ app.put('/api/persons/:id', (request, response, next) => {
     const person = {
         number: request.body.number
     }
-    
-    Person.findByIdAndUpdate(request.params.id, person, {new: true})
-    .then(updatedPerson => {
-        response.json(updatedPerson)
-    })
-    .catch(error => next(error))
+
+    Person.findByIdAndUpdate(request.params.id, person, { new: true })
+        .then(updatedPerson => {
+            response.json(updatedPerson)
+        })
+        .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
@@ -83,13 +79,16 @@ app.delete('/api/persons/:id', (request, response, next) => {
 })
 
 app.get('/info', (request, response) => {
-    response.send(`<div>Phonebook has info for ${persons.length} people</div>`
+    Person.find({})
+    .then((persons) => {
+        response.send(`<div>Phonebook has info for ${persons.length} people</div>`
         + `<div>${new Date()}</div>`)
+    })
 })
 
 //wrong request handler
 const wrongRequest = (request, responce) => {
-    responce.status(404).json({error: 'wrong request'})
+    responce.status(404).json({ error: 'wrong request' })
 }
 app.use(wrongRequest)
 
@@ -97,7 +96,7 @@ app.use(wrongRequest)
 const errorHandler = (error, request, responce, next) => {
     console.log(error)
     if (error.name === 'CastError') {
-        responce.status(400).send('Wrong id formatting')
+        responce.status(400).json({error: 'Wrong id formatting'})
     }
     next(error)
 }
