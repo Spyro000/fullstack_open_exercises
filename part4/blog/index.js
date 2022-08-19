@@ -4,6 +4,9 @@ const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
 
+const { info } = require('./utils/logger');
+const { MONGODB_URI, PORT } = require('./utils/config');
+
 const blogSchema = new mongoose.Schema({
   title: String,
   author: String,
@@ -13,7 +16,7 @@ const blogSchema = new mongoose.Schema({
 
 const Blog = mongoose.model('Blog', blogSchema);
 
-const mongoUrl = 'mongodb+srv://spyfox:MNSBRJz3V7RLT1rN@cluster0.c4xeowl.mongodb.net/blogApp?retryWrites=true&w=majority';
+const mongoUrl = MONGODB_URI;
 mongoose.connect(mongoUrl);
 
 app.use(cors());
@@ -37,8 +40,7 @@ app.post('/api/blogs', (request, response) => {
     });
 });
 
-const PORT = 3003;
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Server running on port ${PORT}`);
+  info(`Server running on port ${PORT}`);
 });
