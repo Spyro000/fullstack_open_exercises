@@ -25,10 +25,18 @@ describe('total likes', () => {
 });
 
 // favoriteBlog tests
-
 describe('favorite blog', () => {
   test(
     'choose blog with the most likes in array',
     () => expect(listHelper.favoriteBlog(blogs)).toBe(blogs[2]),
+  );
+});
+
+// mostBlogs tests
+describe('most blogs', () => {
+  test(
+    'choose author with the most blogs and amount of they blogs',
+    () => expect(listHelper.mostBlogs(blogs))
+      .toEqual({ author: 'Robert C. Martin', blogs: 3 }),
   );
 });
