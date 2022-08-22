@@ -1,3 +1,6 @@
 const dummy = () => 1;
 
-module.exports = dummy;
+const totalLikes = (posts = []) => posts
+  .reduce((total, post) => total + post.likes, 0);
+
+module.exports = { dummy, totalLikes };
