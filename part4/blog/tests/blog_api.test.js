@@ -97,6 +97,23 @@ describe('POST /api/blogs', () => {
     expect(savedBlog.likes).toBeDefined();
     expect(savedBlog.likes).toBe(0);
   });
+
+  test('should return status 400 if title or url missing', async () => {
+    const testBlogNoTitle = helper.getTestBlog();
+    delete testBlogNoTitle.title;
+    const testBlogNoURL = helper.getTestBlog();
+    delete testBlogNoURL.url;
+
+    await api
+      .post('/api/blogs')
+      .send(testBlogNoTitle)
+      .expect(400);
+
+    await api
+      .post('/api/blogs')
+      .send(testBlogNoURL)
+      .expect(400);
+  });
 });
 
 afterAll(() => {
