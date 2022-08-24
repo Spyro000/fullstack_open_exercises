@@ -15,17 +15,22 @@ beforeEach(async () => {
   await Promise.all(promises);
 });
 
-describe('blog api tests', () => {
-  test('GET /api/blogs returns status 200 and content in json', async () => {
+describe('GET /api/blogs ', () => {
+  test('returns status 200 and content in json', async () => {
     await api
       .get('/api/blogs')
       .expect(200)
       .expect('Content-Type', /application\/json/);
   });
 
-  test('GET /api/blogs returns correct amount of blogs', async () => {
+  test('returns correct amount of blogs', async () => {
     const responce = await api.get('/api/blogs');
     expect(responce.body.length).toBe(helper.initialBlogs.length);
+  });
+
+  test('returns blogs with field "id"', async () => {
+    const responce = await api.get('/api/blogs');
+    expect(responce.body[0].id).toBeDefined();
   });
 });
 
