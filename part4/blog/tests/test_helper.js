@@ -2,6 +2,13 @@ const Blog = require('../models/blog');
 
 const initialBlogs = require('./test_blogs');
 
+const testBlog = {
+  title: 'test',
+  author: 'test',
+  url: 'https://test.com',
+  likes: 10,
+};
+
 const nonExistingId = async () => {
   const blog = new Blog({
     title: 'Temp',
@@ -13,7 +20,7 @@ const nonExistingId = async () => {
   await blog.remove();
 
   // eslint-disable-next-line no-underscore-dangle
-  return blog._id.toString();
+  return blog.id.toString();
 };
 
 const blogsInDb = async () => {
@@ -21,8 +28,11 @@ const blogsInDb = async () => {
   return blogsDb;
 };
 
+const getTestBlog = () => ({ ...testBlog });
+
 module.exports = {
   initialBlogs,
   blogsInDb,
   nonExistingId,
+  getTestBlog,
 };
