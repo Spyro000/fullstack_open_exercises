@@ -116,6 +116,22 @@ describe('POST /api/blogs', () => {
   });
 });
 
+describe('DELETE /api/blog/:id', () => {
+  test('should delete blog from DB when correct Id is presented', async () => {
+    const responceBeforeDelete = await api.get('/api/blogs');
+    const blogToDelete = responceBeforeDelete.body[0];
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204);
+
+    const responceAfterDelete = await api.get('/api/blogs');
+    const content = responceAfterDelete.body.map((n) => n.title);
+
+    expect(responceAfterDelete.body.length).toBe(responceBeforeDelete.body.length - 1);
+    expect(content).not.toContainEqual(blogToDelete.title);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
