@@ -132,6 +132,24 @@ describe('DELETE /api/blog/:id', () => {
   });
 });
 
+describe('PUT /api/blog/:id', () => {
+  test('should change title of blog under correct id', async () => {
+    const blogsBeforeChange = await api.get('/api/blogs');
+    const blogToChange = blogsBeforeChange.body[0];
+    blogToChange.title = 'New title';
+
+    await api
+      .put(`/api/blogs/${blogToChange.id}`)
+      .send(blogToChange);
+
+    const blogsAfterChanging = await api.get('/api/blogs');
+    const changedBlog = blogsAfterChanging.body
+      .find((blog) => blog.id === blogToChange.id);
+
+    expect(changedBlog).toEqual(blogToChange);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
