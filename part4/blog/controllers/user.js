@@ -11,13 +11,18 @@ userRouter.post('/', async (request, responce) => {
   const { username, name, password } = request.body;
 
   if (!password) {
-    responce.status(404).json({ error: 'missing password' });
+    responce.status(400).json({ error: 'missing password' });
+    return;
+  }
+
+  if (password.length < 3) {
+    responce.status(400).json({ error: 'password length must be at least 3' });
     return;
   }
 
   const sameUser = await User.findOne({ username });
   if (sameUser) {
-    responce.status(404).json({ error: `${username} already exists` });
+    responce.status(400).json({ error: `${username} already exists` });
     return;
   }
 
