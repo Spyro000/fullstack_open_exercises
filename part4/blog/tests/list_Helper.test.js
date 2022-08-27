@@ -42,7 +42,7 @@ describe('most blogs', () => {
   );
 });
 
-// mostBlogs tests
+// mostLikes tests
 describe('most likes', () => {
   test(
     'choose author with the most likes and amount of them',
