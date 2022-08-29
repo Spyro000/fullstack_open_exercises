@@ -19,8 +19,7 @@ blogRouter.post('/', async (request, response) => {
     author,
     likes,
   } = request.body;
-  const { token } = request;
-  const decodedToken = jwt.verify(token, process.env.SECRET);
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
 
   // Check if every important variable exists
   if (!decodedToken.id) {
@@ -67,8 +66,26 @@ blogRouter.put('/:id', async (request, responce) => {
 
 // Delete existing blog
 blogRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndDelete(request.params.id);
-  response.status(204).end();
+  // Get important data
+  const blogForDeletion = await Blog.findById(request.params.id);
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+
+  // Check conditions
+  if (!decodedToken.id) {
+    return response.status(401).json({
+      error: 'token missing or invalid',
+    });
+  }
+  if (!(blogForDeletion.user.toString() === decodedToken.id)) {
+    // blogForDeletion.user.toString() === decodedToken.id
+    return response.status(401).json({
+      error: 'permission denied',
+    });
+  }
+
+  // Delete blog
+  await blogForDeletion.delete();
+  return response.status(204).end();
 });
 
 module.exports = blogRouter;
