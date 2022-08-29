@@ -2,9 +2,10 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-  "title": "New title",
+  "title": "Test",
   "author": "String",
   "url": "String",
+  "userId": "630c8b4b2e7c1b8dca1ec9fa",
   "likes": 33
 }
 ###
@@ -12,7 +13,7 @@ POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-  "username": "root1",
+  "username": "root",
   "name": "String",
   "password": "root"
 }
