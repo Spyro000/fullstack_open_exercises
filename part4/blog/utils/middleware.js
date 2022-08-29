@@ -22,14 +22,23 @@ const errorHandler = (err, request, responce, next) => {
     return responce.status(400).json({ error: err.message });
   }
   if (err.name === 'JsonWebTokenError') {
-    return responce.status(400).json({ error: err.message });
+    return responce.status(400).json({ error: 'wrong or missing token' });
   }
 
   return next(err);
+};
+
+const tokenExtractor = (request, responce, next) => {
+  const authorization = request.get('authorization');
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    request.token = authorization.substring(7);
+  }
+  next();
 };
 
 module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
+  tokenExtractor,
 };
