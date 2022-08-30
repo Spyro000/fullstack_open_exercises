@@ -1,8 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const blogRouter = require('express').Router();
-const jwt = require('jsonwebtoken');
+const middleware = require('../utils/middleware');
 const Blog = require('../models/blog');
-const User = require('../models/user');
 
 // Get all blogs
 blogRouter.get('/', async (request, response) => {
@@ -11,22 +10,17 @@ blogRouter.get('/', async (request, response) => {
 });
 
 // Add new blog
-blogRouter.post('/', async (request, response) => {
-  // Get variables from request and the token
+blogRouter.post('/', middleware.userExtractor, async (request, response) => {
+  // Get variables from request
   const {
     url,
     title,
     author,
     likes,
   } = request.body;
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  const { user } = request;
 
-  // Check if every important variable exists
-  if (!decodedToken.id) {
-    return response.status(401).json({
-      error: 'token missing or invalid',
-    });
-  }
+  // Check conditions
   if (!url || !title) {
     return response.status(400).json({
       error: 'missing url or title',
@@ -34,8 +28,6 @@ blogRouter.post('/', async (request, response) => {
   }
 
   // If everything ok, create new blog
-  const user = await User.findById(decodedToken.id);
-
   const blog = new Blog({
     url,
     title,
@@ -65,19 +57,13 @@ blogRouter.put('/:id', async (request, responce) => {
 });
 
 // Delete existing blog
-blogRouter.delete('/:id', async (request, response) => {
+blogRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
   // Get important data
   const blogForDeletion = await Blog.findById(request.params.id);
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  const { user } = request;
 
   // Check conditions
-  if (!decodedToken.id) {
-    return response.status(401).json({
-      error: 'token missing or invalid',
-    });
-  }
-  if (!(blogForDeletion.user.toString() === decodedToken.id)) {
-    // blogForDeletion.user.toString() === decodedToken.id
+  if (!(blogForDeletion.user.toString() === user._id.toString())) {
     return response.status(401).json({
       error: 'permission denied',
     });
