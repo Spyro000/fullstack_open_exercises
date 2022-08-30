@@ -24,7 +24,7 @@ const errorHandler = (err, request, responce, next) => {
     return responce.status(400).json({ error: err.message });
   }
   if (err.name === 'JsonWebTokenError') {
-    return responce.status(400).json({ error: 'wrong or missing token' });
+    return responce.status(401).json({ error: 'wrong or missing token' });
   }
 
   return next(err);

@@ -3,13 +3,38 @@ const mongoose = require('mongoose');
 const app = require('../app');
 const helper = require('./test_helper');
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 const api = supertest(app);
+const globalVars = {};
+
+// Create user and get token
+beforeAll(async () => {
+  await User.deleteMany({});
+  const user = {
+    username: 'root',
+    name: 'test',
+    password: 'password',
+  };
+
+  const userRes = await api
+    .post('/api/users')
+    .send(user);
+
+  globalVars.userId = userRes.body.id;
+  const tokenRes = await api
+    .post('/api/login')
+    .send(user);
+  globalVars.token = `bearer ${tokenRes.body.token}`;
+});
 
 beforeEach(async () => {
   await Blog.deleteMany({});
 
-  const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
+  const blogObjects = helper.initialBlogs.map((blog) => new Blog({
+    ...blog,
+    user: globalVars.userId,
+  }));
   const promises = blogObjects.map((blog) => blog.save());
 
   await Promise.all(promises);
@@ -40,6 +65,7 @@ describe('POST /api/blogs', () => {
     const testBlog = helper.getTestBlog();
     const responce = await api
       .post('/api/blogs')
+      .set('authorization', globalVars.token)
       .send(testBlog);
     expect(responce.body.id).toBeDefined();
   });
@@ -49,6 +75,7 @@ describe('POST /api/blogs', () => {
 
     await api
       .post('/api/blogs')
+      .set('authorization', globalVars.token)
       .send(testBlog);
 
     const responce = await api.get('/api/blogs');
@@ -61,6 +88,7 @@ describe('POST /api/blogs', () => {
     const testBlog = helper.getTestBlog();
     const postResponce = await api
       .post('/api/blogs')
+      .set('authorization', globalVars.token)
       .send(testBlog);
     const idOfResponce = postResponce.body.id;
 
@@ -74,6 +102,7 @@ describe('POST /api/blogs', () => {
     const testBlog = helper.getTestBlog();
     const postResponce = await api
       .post('/api/blogs')
+      .set('authorization', globalVars.token)
       .send(testBlog);
     const idOfResponce = postResponce.body.id;
 
@@ -88,6 +117,7 @@ describe('POST /api/blogs', () => {
     delete testBlog.likes;
     const postResponce = await api
       .post('/api/blogs')
+      .set('authorization', globalVars.token)
       .send(testBlog);
     const idOfResponce = postResponce.body.id;
 
@@ -106,13 +136,24 @@ describe('POST /api/blogs', () => {
 
     await api
       .post('/api/blogs')
+      .set('authorization', globalVars.token)
       .send(testBlogNoTitle)
       .expect(400);
 
     await api
       .post('/api/blogs')
+      .set('authorization', globalVars.token)
       .send(testBlogNoURL)
       .expect(400);
+  });
+
+  test('should return status 401 if token missing', async () => {
+    const testBlog = helper.getTestBlog();
+
+    await api
+      .post('/api/blogs')
+      .send(testBlog)
+      .expect(401);
   });
 });
 
@@ -122,6 +163,7 @@ describe('DELETE /api/blog/:id', () => {
     const blogToDelete = responceBeforeDelete.body[0];
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('authorization', globalVars.token)
       .expect(204);
 
     const responceAfterDelete = await api.get('/api/blogs');
