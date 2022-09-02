@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 function Blog({ blog }) {
   return (
     <div>
-      {blog.title}
+      {`${blog.title} `}
       {blog.author}
     </div>
   );
