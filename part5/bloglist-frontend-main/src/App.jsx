@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Blog from './components/Blog';
 import LoginForm from './components/LoginForm';
 import NewBlogForm from './components/NewBlogForm';
+import InfoField from './components/InfoField';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
@@ -14,6 +15,8 @@ function App() {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
+  const [infoText, setInfoText] = useState('');
+  const [isError, setIsError] = useState(false);
   const [user, setUser] = useState(null);
 
   // List of effects
@@ -40,21 +43,42 @@ function App() {
       const responce = await loginService.getToken(login, password);
       window.localStorage.setItem('loggedUser', JSON.stringify(responce));
       setUser(responce);
+      setInfoText(`user "${responce.username}" successfully logged in`);
+      setIsError(false);
+
+      setTimeout(() => {
+        setInfoText('');
+      }, 3000);
     } catch (error) {
-      // TODO: add normal error handler
-      console.log(error);
+      setInfoText(error.response.data.error);
+      setIsError(true);
+
+      setTimeout(() => {
+        setInfoText('');
+      }, 3000);
     }
   };
 
   const onCreateBlogSubmit = async (event) => {
     event.preventDefault();
     try {
-      await blogService.createNew(user.token, url, title, author);
+      const responce = await blogService.createNew(user.token, url, title, author);
       const blogsFromDB = await blogService.getAll();
       setBlogs(blogsFromDB);
+      setInfoText(`a new blog "${responce.title}" added`);
+      setIsError(false);
+
+      setTimeout(() => {
+        setInfoText('');
+      }, 3000);
     } catch (error) {
       // TODO: add normal error handler
-      console.log(error);
+      setInfoText(error.response.data.error);
+      setIsError(true);
+
+      setTimeout(() => {
+        setInfoText('');
+      }, 3000);
     }
   };
 
@@ -95,6 +119,7 @@ function App() {
   // jsx result
   return (
     <div>
+      <InfoField text={infoText} isError={isError} />
       {!user && loginForm}
       {user && (
         <>
