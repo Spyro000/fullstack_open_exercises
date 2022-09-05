@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Blog from './components/Blog';
 import LoginForm from './components/LoginForm';
+import NewBlogForm from './components/NewBlogForm';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
@@ -10,6 +11,9 @@ function App() {
   const [blogs, setBlogs] = useState([]);
   const [password, setPassword] = useState('');
   const [login, setLogin] = useState('');
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [url, setUrl] = useState('');
   const [user, setUser] = useState(null);
 
   // List of effects
@@ -42,6 +46,18 @@ function App() {
     }
   };
 
+  const onCreateBlogSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      await blogService.createNew(user.token, url, title, author);
+      const blogsFromDB = await blogService.getAll();
+      setBlogs(blogsFromDB);
+    } catch (error) {
+      // TODO: add normal error handler
+      console.log(error);
+    }
+  };
+
   const onLogoutClick = () => {
     window.localStorage.removeItem('loggedUser');
     setUser(null);
@@ -58,20 +74,40 @@ function App() {
   );
   const listOfAllBlogs = (
     <>
-      <h1>blogs</h1>
-      <p>
-        {`${user && user.name} `}
-        logged in
-        <button onClick={onLogoutClick} type="button">logout</button>
-      </p>
       {blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
+    </>
+  );
+  const createNewBlogForm = (
+    <>
+      <h1>create new</h1>
+      <NewBlogForm
+        title={title}
+        onChangeTitle={({ target }) => setTitle(target.value)}
+        author={author}
+        onChangeAuthor={({ target }) => setAuthor(target.value)}
+        url={url}
+        onChangeUrl={({ target }) => setUrl(target.value)}
+        onSubmit={onCreateBlogSubmit}
+      />
     </>
   );
 
   // jsx result
   return (
     <div>
-      {!user ? loginForm : listOfAllBlogs}
+      {!user && loginForm}
+      {user && (
+        <>
+          <h1>blogs</h1>
+          <p>
+            {`${user && user.name} `}
+            logged in
+            <button onClick={onLogoutClick} type="button">logout</button>
+          </p>
+          {createNewBlogForm}
+          {listOfAllBlogs}
+        </>
+      )}
     </div>
   );
 }
