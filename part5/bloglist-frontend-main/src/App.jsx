@@ -1,9 +1,10 @@
 /* eslint-env browser */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import LoginForm from './components/LoginForm';
 import NewBlogForm from './components/NewBlogForm';
 import InfoField from './components/InfoField';
+import Toggable from './components/Toggable';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
@@ -36,6 +37,8 @@ function App() {
     }
   }, []);
 
+  // Use refs
+  const blogFormRef = useRef();
   // list 'on' functions
   const onLoginSubmit = async (event) => {
     event.preventDefault();
@@ -61,10 +64,14 @@ function App() {
 
   const onCreateBlogSubmit = async (event) => {
     event.preventDefault();
+    blogFormRef.current.toggleVisibility();
     try {
       const responce = await blogService.createNew(user.token, url, title, author);
       const blogsFromDB = await blogService.getAll();
       setBlogs(blogsFromDB);
+      setTitle('');
+      setAuthor('');
+      setUrl('');
       setInfoText(`a new blog "${responce.title}" added`);
       setIsError(false);
 
@@ -86,6 +93,7 @@ function App() {
     window.localStorage.removeItem('loggedUser');
     setUser(null);
   };
+
   // supportive jsx code
   const loginForm = (
     <LoginForm
@@ -96,13 +104,15 @@ function App() {
       onSubmit={onLoginSubmit}
     />
   );
+
   const listOfAllBlogs = (
     <>
       {blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
     </>
   );
+
   const createNewBlogForm = (
-    <>
+    <Toggable buttonName="newBlog" ref={blogFormRef}>
       <h1>create new</h1>
       <NewBlogForm
         title={title}
@@ -113,7 +123,7 @@ function App() {
         onChangeUrl={({ target }) => setUrl(target.value)}
         onSubmit={onCreateBlogSubmit}
       />
-    </>
+    </Toggable>
   );
 
   // jsx result
