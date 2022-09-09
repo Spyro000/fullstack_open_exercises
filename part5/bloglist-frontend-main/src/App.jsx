@@ -13,9 +13,6 @@ function App() {
   const [blogs, setBlogs] = useState([]);
   const [password, setPassword] = useState('');
   const [login, setLogin] = useState('');
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [url, setUrl] = useState('');
   const [infoText, setInfoText] = useState('');
   const [isError, setIsError] = useState(false);
   const [user, setUser] = useState(null);
@@ -62,16 +59,12 @@ function App() {
     }
   };
 
-  const onCreateBlogSubmit = async (event) => {
-    event.preventDefault();
+  const onCreateBlogSubmit = async ({ url, title, author }) => {
     blogFormRef.current.toggleVisibility();
     try {
       const responce = await blogService.createNew(user.token, url, title, author);
       const blogsFromDB = await blogService.getAll();
       setBlogs(blogsFromDB);
-      setTitle('');
-      setAuthor('');
-      setUrl('');
       setInfoText(`a new blog "${responce.title}" added`);
       setIsError(false);
 
@@ -105,24 +98,10 @@ function App() {
     />
   );
 
-  const listOfAllBlogs = (
-    <>
-      {blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
-    </>
-  );
-
   const createNewBlogForm = (
     <Toggable buttonName="newBlog" ref={blogFormRef}>
       <h1>create new</h1>
-      <NewBlogForm
-        title={title}
-        onChangeTitle={({ target }) => setTitle(target.value)}
-        author={author}
-        onChangeAuthor={({ target }) => setAuthor(target.value)}
-        url={url}
-        onChangeUrl={({ target }) => setUrl(target.value)}
-        onSubmit={onCreateBlogSubmit}
-      />
+      <NewBlogForm onSubmit={onCreateBlogSubmit} />
     </Toggable>
   );
 
@@ -140,7 +119,7 @@ function App() {
             <button onClick={onLogoutClick} type="button">logout</button>
           </p>
           {createNewBlogForm}
-          {listOfAllBlogs}
+          {blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
         </>
       )}
     </div>

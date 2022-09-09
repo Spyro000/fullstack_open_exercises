@@ -1,42 +1,42 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 
-function NewBlogForm({
-  title, onChangeTitle,
-  author, onChangeAuthor,
-  url, onChangeUrl,
-  onSubmit,
-}) {
+function NewBlogForm({ onSubmit }) {
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [url, setUrl] = useState('');
+
+  const createBlog = (event) => {
+    event.preventDefault();
+    onSubmit({
+      title,
+      author,
+      url,
+    });
+    setTitle('');
+    setAuthor('');
+    setUrl('');
+  };
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={createBlog}>
       <div>
         title:
-        <input type="text" value={title} onChange={onChangeTitle} />
+        <input type="text" value={title} onChange={(event) => setTitle(event.target.value)} />
       </div>
       <div>
         author:
-        <input type="text" value={author} onChange={onChangeAuthor} />
+        <input type="text" value={author} onChange={(event) => setAuthor(event.target.value)} />
       </div>
       <div>
         url:
-        <input type="text" value={url} onChange={onChangeUrl} />
+        <input type="text" value={url} onChange={(event) => setUrl(event.target.value)} />
       </div>
       <button type="submit">create</button>
     </form>
   );
 }
 NewBlogForm.propTypes = {
-  title: PropTypes.string,
-  onChangeTitle: PropTypes.func.isRequired,
-  author: PropTypes.string,
-  onChangeAuthor: PropTypes.func.isRequired,
-  url: PropTypes.string,
-  onChangeUrl: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-};
-NewBlogForm.defaultProps = {
-  title: '',
-  author: '',
-  url: '',
 };
 
 export default NewBlogForm;
