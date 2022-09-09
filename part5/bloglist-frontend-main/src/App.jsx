@@ -72,7 +72,6 @@ function App() {
         setInfoText('');
       }, 3000);
     } catch (error) {
-      // TODO: add normal error handler
       setInfoText(error.response.data.error);
       setIsError(true);
 
@@ -82,6 +81,29 @@ function App() {
     }
   };
 
+  const onAddLike = async (blog) => {
+    try {
+      const updatedBlog = {
+        ...blog,
+        likes: blog.likes + 1,
+      };
+      await blogService.update(user.token, updatedBlog);
+      const blogsFromDB = await blogService.getAll();
+      setBlogs(blogsFromDB);
+
+      setInfoText('like added');
+      setIsError(false);
+      setTimeout(() => {
+        setInfoText('');
+      }, 3000);
+    } catch (error) {
+      setInfoText(error.response.data.error);
+      setIsError(true);
+      setTimeout(() => {
+        setInfoText('');
+      }, 3000);
+    }
+  };
   const onLogoutClick = () => {
     window.localStorage.removeItem('loggedUser');
     setUser(null);
@@ -119,7 +141,7 @@ function App() {
             <button onClick={onLogoutClick} type="button">logout</button>
           </p>
           {createNewBlogForm}
-          {blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
+          {blogs.map((blog) => <Blog key={blog.id} blog={blog} onAddLike={onAddLike} />)}
         </>
       )}
     </div>

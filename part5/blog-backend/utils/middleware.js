@@ -48,7 +48,7 @@ const userExtractor = async (request, response, next) => {
     });
   }
 
-  // If everything ok, create new blog
+  // If everything ok, add user to request
   request.user = await User.findById(decodedToken.id);
   return next();
 };

@@ -44,7 +44,14 @@ blogRouter.post('/', middleware.userExtractor, async (request, response) => {
 });
 
 // Change existing blog
-blogRouter.put('/:id', async (request, responce) => {
+blogRouter.put('/:id', middleware.userExtractor, async (request, responce) => {
+  const { user } = request;
+  const blogToChange = await Blog.findById(request.params.id);
+
+  if (user.id.toString() !== blogToChange.user.toString()) {
+    return responce.status(401).json({ error: 'Permission to change blog denied' });
+  }
+
   const { title, url, likes } = request.body;
   const newBlog = {
     title,
@@ -53,7 +60,7 @@ blogRouter.put('/:id', async (request, responce) => {
   };
 
   const updatedNote = await Blog.findByIdAndUpdate(request.params.id, newBlog, { new: true });
-  responce.json(updatedNote);
+  return responce.json(updatedNote);
 });
 
 // Delete existing blog

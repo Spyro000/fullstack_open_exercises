@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-function Blog({ blog }) {
+function Blog({ blog, onAddLike }) {
   // use states
   const [hidden, setHidden] = useState(true);
 
@@ -24,8 +24,9 @@ function Blog({ blog }) {
       </button>
       <div style={hiddenStyle}>
         <div>{blog.url}</div>
+        <span>likes </span>
         {blog.likes}
-        <button type="button">like</button>
+        <button type="button" onClick={() => onAddLike(blog)}>like</button>
         <div>{blog.author}</div>
       </div>
     </div>
@@ -38,7 +39,7 @@ Blog.propTypes = {
     likes: PropTypes.number,
     url: PropTypes.string,
   }).isRequired,
-
+  onAddLike: PropTypes.func.isRequired,
 };
 
 export default Blog;
