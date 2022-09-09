@@ -141,7 +141,9 @@ function App() {
             <button onClick={onLogoutClick} type="button">logout</button>
           </p>
           {createNewBlogForm}
-          {blogs.map((blog) => <Blog key={blog.id} blog={blog} onAddLike={onAddLike} />)}
+          {[...blogs]
+            .sort((a, b) => a.likes < b.likes)
+            .map((blog) => <Blog key={blog.id} blog={blog} onAddLike={onAddLike} />)}
         </>
       )}
     </div>
