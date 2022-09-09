@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-function NewBlogForm({ onSubmit }) {
+const NewBlogForm = ({ onSubmit }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
@@ -34,7 +34,7 @@ function NewBlogForm({ onSubmit }) {
       <button type="submit">create</button>
     </form>
   );
-}
+};
 NewBlogForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };

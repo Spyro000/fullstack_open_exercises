@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-function InfoField({ text, isError }) {
+const InfoField = ({ text, isError }) => {
   const infoStyle = {
     borderStyle: 'solid',
     padding: '5px',
@@ -18,7 +18,7 @@ function InfoField({ text, isError }) {
       { text }
     </h1>
   );
-}
+};
 InfoField.propTypes = {
   text: PropTypes.string.isRequired,
   isError: PropTypes.bool,

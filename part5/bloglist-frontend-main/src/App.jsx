@@ -8,7 +8,7 @@ import Toggable from './components/Toggable';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
-function App() {
+const App = () => {
   // Setup states
   const [blogs, setBlogs] = useState([]);
   const [password, setPassword] = useState('');
@@ -148,6 +148,6 @@ function App() {
       )}
     </div>
   );
-}
+};
 
 export default App;

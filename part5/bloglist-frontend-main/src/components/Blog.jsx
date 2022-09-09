@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-function Blog({ blog, onAddLike, onRemoveBlog }) {
+const Blog = ({ blog, onAddLike, onRemoveBlog }) => {
   // use states
   const [hidden, setHidden] = useState(true);
 
@@ -32,7 +32,7 @@ function Blog({ blog, onAddLike, onRemoveBlog }) {
       </div>
     </div>
   );
-}
+};
 Blog.propTypes = {
   blog: PropTypes.shape({
     title: PropTypes.string,
