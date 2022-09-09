@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-function Blog({ blog, onAddLike }) {
+function Blog({ blog, onAddLike, onRemoveBlog }) {
   // use states
   const [hidden, setHidden] = useState(true);
 
@@ -28,6 +28,7 @@ function Blog({ blog, onAddLike }) {
         {blog.likes}
         <button type="button" onClick={() => onAddLike(blog)}>like</button>
         <div>{blog.author}</div>
+        {onRemoveBlog && <button type="button" onClick={() => onRemoveBlog(blog)}>remove</button>}
       </div>
     </div>
   );
@@ -40,6 +41,10 @@ Blog.propTypes = {
     url: PropTypes.string,
   }).isRequired,
   onAddLike: PropTypes.func.isRequired,
+  onRemoveBlog: PropTypes.func,
+};
+Blog.defaultProps = {
+  onRemoveBlog: null,
 };
 
 export default Blog;

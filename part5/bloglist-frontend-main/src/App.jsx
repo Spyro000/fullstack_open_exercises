@@ -36,6 +36,16 @@ function App() {
 
   // Use refs
   const blogFormRef = useRef();
+
+  // inner helper functions
+  const sendMessage = (message, isErrorMessage) => {
+    setInfoText(message);
+    setIsError(isErrorMessage);
+    setTimeout(() => {
+      setInfoText('');
+    }, 3000);
+  };
+
   // list 'on' functions
   const onLoginSubmit = async (event) => {
     event.preventDefault();
@@ -43,19 +53,9 @@ function App() {
       const responce = await loginService.getToken(login, password);
       window.localStorage.setItem('loggedUser', JSON.stringify(responce));
       setUser(responce);
-      setInfoText(`user "${responce.username}" successfully logged in`);
-      setIsError(false);
-
-      setTimeout(() => {
-        setInfoText('');
-      }, 3000);
+      sendMessage(`user "${responce.username}" successfully logged in`, false);
     } catch (error) {
-      setInfoText(error.response.data.error);
-      setIsError(true);
-
-      setTimeout(() => {
-        setInfoText('');
-      }, 3000);
+      sendMessage(error.response.data.error, true);
     }
   };
 
@@ -65,19 +65,9 @@ function App() {
       const responce = await blogService.createNew(user.token, url, title, author);
       const blogsFromDB = await blogService.getAll();
       setBlogs(blogsFromDB);
-      setInfoText(`a new blog "${responce.title}" added`);
-      setIsError(false);
-
-      setTimeout(() => {
-        setInfoText('');
-      }, 3000);
+      sendMessage(`a new blog "${responce.title}" added`, false);
     } catch (error) {
-      setInfoText(error.response.data.error);
-      setIsError(true);
-
-      setTimeout(() => {
-        setInfoText('');
-      }, 3000);
+      sendMessage(error.response.data.error, true);
     }
   };
 
@@ -90,20 +80,23 @@ function App() {
       await blogService.update(user.token, updatedBlog);
       const blogsFromDB = await blogService.getAll();
       setBlogs(blogsFromDB);
-
-      setInfoText('like added');
-      setIsError(false);
-      setTimeout(() => {
-        setInfoText('');
-      }, 3000);
+      sendMessage('like added', false);
     } catch (error) {
-      setInfoText(error.response.data.error);
-      setIsError(true);
-      setTimeout(() => {
-        setInfoText('');
-      }, 3000);
+      sendMessage(error.response.data.error, true);
     }
   };
+
+  const onRemoveBlog = async (blog) => {
+    try {
+      await blogService.deleteBlog(user.token, blog);
+      const blogsFromDB = await blogService.getAll();
+      setBlogs(blogsFromDB);
+      sendMessage('Blog successfully deleted', false);
+    } catch (error) {
+      sendMessage(error.response.data.error, true);
+    }
+  };
+
   const onLogoutClick = () => {
     window.localStorage.removeItem('loggedUser');
     setUser(null);
@@ -143,7 +136,14 @@ function App() {
           {createNewBlogForm}
           {[...blogs]
             .sort((a, b) => a.likes < b.likes)
-            .map((blog) => <Blog key={blog.id} blog={blog} onAddLike={onAddLike} />)}
+            .map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                onAddLike={onAddLike}
+                onRemoveBlog={blog.user.id === user.id ? onRemoveBlog : null}
+              />
+            ))}
         </>
       )}
     </div>
