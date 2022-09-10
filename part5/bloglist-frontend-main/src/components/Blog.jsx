@@ -18,16 +18,16 @@ const Blog = ({ blog, onAddLike, onRemoveBlog }) => {
 
   return (
     <div style={blogStyle}>
-      {`${blog.title} `}
+      <span>{blog.title}</span>
+      <span>{blog.author}</span>
       <button type="button" onClick={() => setHidden(!hidden)}>
         {hidden ? 'view' : 'hide'}
       </button>
       <div style={hiddenStyle}>
         <div>{blog.url}</div>
         <span>likes </span>
-        {blog.likes}
+        <span>{blog.likes}</span>
         <button type="button" onClick={() => onAddLike(blog)}>like</button>
-        <div>{blog.author}</div>
         {onRemoveBlog && <button type="button" onClick={() => onRemoveBlog(blog)}>remove</button>}
       </div>
     </div>
