@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom/extend-expect';
 import { render, screen } from '@testing-library/react';
-// import userEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import Blog from './Blog';
 
 describe('<Blog />', () => {
@@ -31,5 +31,19 @@ describe('<Blog />', () => {
 
     const url = await screen.findByText(blog.url);
     expect(url).not.toBeVisible();
+  });
+
+  test('render shows url and likes after show button pressed', async () => {
+    setupRender();
+    const user = userEvent.setup();
+    const button = screen.getByText('view');
+
+    await user.click(button);
+
+    const likes = await screen.findByText(blog.likes);
+    expect(likes).toBeVisible();
+
+    const url = await screen.findByText(blog.url);
+    expect(url).toBeVisible();
   });
 });
