@@ -47,7 +47,7 @@ describe('Blog app', function () {
     it('A blog can be created', function () {
       const newBlog = {
         title: 'title',
-        author: 'author',
+        author: 'authorTest',
         url: 'url',
       };
 
@@ -65,8 +65,8 @@ describe('Blog app', function () {
     describe('When blog created', function () {
       beforeEach(function () {
         const newBlog = {
-          title: 'title',
-          author: 'author',
+          title: 'titleTest',
+          author: 'authorTest',
           url: 'url',
         };
 
@@ -82,6 +82,15 @@ describe('Blog app', function () {
         cy.contains('view').click();
         cy.get('[type="button"]').contains('like').click();
         cy.contains('likes 1');
+      });
+
+      it('User can delete blog', function () {
+        cy.contains('view').click();
+        cy.get('[type="button"]').contains('remove').click();
+        cy.wait(500);
+        cy.contains('authorTest').should('not.exist');
+        cy.contains('titleTest').should('not.exist');
+        cy.contains('Blog successfully deleted');
       });
     });
   });
