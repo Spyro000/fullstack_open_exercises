@@ -1,4 +1,7 @@
 module.exports = {
+  env: {
+    'cypress/globals': true,
+  },
   extends: [
     'airbnb',
     'airbnb/hooks',
@@ -8,4 +11,7 @@ module.exports = {
   rules: {
     'react/function-component-definition': [2, { namedComponents: 'arrow-function' }],
   },
+  plugins: [
+    'cypress',
+  ],
 };
