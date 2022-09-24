@@ -134,16 +134,18 @@ const App = () => {
             <button onClick={onLogoutClick} type="button">logout</button>
           </p>
           {createNewBlogForm}
-          {[...blogs]
-            .sort((a, b) => a.likes < b.likes)
-            .map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                onAddLike={onAddLike}
-                onRemoveBlog={blog.user.id === user.id ? onRemoveBlog : null}
-              />
-            ))}
+          <div className="blogs">
+            {[...blogs]
+              .sort((a, b) => b.likes - a.likes)
+              .map((blog) => (
+                <Blog
+                  key={blog.id}
+                  blog={blog}
+                  onAddLike={onAddLike}
+                  onRemoveBlog={blog.user.id === user.id ? onRemoveBlog : null}
+                />
+              ))}
+          </div>
         </>
       )}
     </div>

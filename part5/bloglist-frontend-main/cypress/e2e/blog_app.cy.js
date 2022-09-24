@@ -92,6 +92,32 @@ describe('Blog app', function () {
         cy.contains('titleTest').should('not.exist');
         cy.contains('Blog successfully deleted');
       });
+
+      it('Sorts blogs in likes order', function () {
+        const secondBlog = {
+          title: 'secondTitle',
+          author: 'secondA',
+          url: 'secondU',
+        };
+
+        cy.contains('newBlog').click();
+        cy.get('[placeholder="Title"]').type(secondBlog.title);
+        cy.get('[placeholder="Author"]').type(secondBlog.author);
+        cy.get('[placeholder="Url"]').type(secondBlog.url);
+        cy.get('[type="submit"]').click();
+
+        cy.contains('secondA').next().click();
+        for (let i = 0; i < 10; i += 1) {
+          cy.contains('secondA').next().next()
+            .contains('like')
+            .next()
+            .next()
+            .click();
+          cy.wait(100);
+        }
+        cy.get('.blogs>div').eq(0).should('contain', 'secondTitle');
+        cy.get('.blogs>div').eq(1).should('contain', 'titleTest');
+      });
     });
   });
 });
